@@ -1,0 +1,43 @@
+stages:
+  preprocessing:
+    cmd: python scripts/preprocessing.py
+    deps:
+    - data/data.zip
+    outs:
+    - preprocessed/preprocessed.zip
+  training:
+    cmd: python scripts/training.py
+    deps:
+    - preprocessed/new_preprocessed.zip
+    - preprocessed/preprocessed.zip
+    - training_params/base_params.yaml
+    outs:
+    - out.pt
+  postprocessing:
+    cmd: python scripts/heavy_postprocessing.py
+    deps:
+    - rmsprop_out.pt
+    - out.pt
+    - unet1024_out.pt
+    outs:
+    - out_params.json
+  best_preprocessing:
+    cmd: python scripts/preprocessing.py
+    deps:
+    - data/thebest_data.zip
+    outs:
+    - preprocessed/new_preprocessed.zip
+  rmsprop_training:
+    cmd: python scripts/training.py
+    deps:
+    - preprocessed/preprocessed.zip
+    - training_params/rmsprop_params.yaml
+    outs:
+    - rmsprop_out.pt
+  unet1024_training:
+    cmd: python scripts/unet1024_training.py
+    deps:
+    - preprocessed/preprocessed.zip
+    - training_params/base_params.yaml
+    outs:
+    - unet1024_out.pt
